@@ -2,6 +2,8 @@
 #include <math.h>
 #include <cstdlib>
 #include <ctime>
+#include <string>
+#include <Windows.h>
 
 void Objekt::init_data(int pos[], int direction,int mvspeed, int mindimesion) {
 	current_length = INIT_LENGTH;
@@ -63,7 +65,7 @@ void Objekt::controll_data(int direction) {
 	
 }
 
-bool Collison::detect(int **pos, int **dim) {
+bool Collison::detect(int **pos, int **dim,int *direc) {
 	double r[2];
 
 	int colisionsbuffer = 9;
@@ -77,8 +79,25 @@ bool Collison::detect(int **pos, int **dim) {
 
 	int x = pos[0][X_data] - pos[1][X_data];
 	int y = pos[0][Y_data] - pos[1][Y_data];
-	double colision = sqrt(pow(x,2)+pow(y,2));
 
+	double colision = sqrt(pow(x, 2) + pow(y, 2));
+
+	//int value = direction[0];
+	double value1 = -direc[0] * x;
+	double value2 = -direc[1] * y;
+
+
+	/*string foo = to_string(direc[0])
+		+ " " + to_string(x)
+		+ " " + to_string(direc[1])
+		+ " " + to_string(y);
+
+	MessageBox(NULL, foo.c_str(), "MSG", MB_OK | MB_ICONQUESTION);
+	*/
+	
+	if (value1 <  0 || value2 < 0) {
+		return false;
+	}
 
 	colision -= r[0] + r[1] - colisionsbuffer;
 
@@ -108,12 +127,17 @@ bool Collison::detect_decoded(int pos1[DIMENSION_DATA][DIMENSION][WINING_LENGTH 
 	dim[1][0] = dim2[X_data];
 	dim[1][1] = dim2[Y_data];
 
-	return detect(pos,dim);
+	int *direc = new int[2];
+	direc[0] = 0;
+	direc[1] = 0;
+
+	return detect(pos,dim, direc);
 }
 
 bool Collison::detect_decoded_snake(Objekt *temp_obj, int segment) {
 	int **pos = new int *[2];
 	int **dim = new int *[2];
+	int *direc = new int [2];
 
 	int i;
 	for (i = 0; i < 2; i++) {
@@ -131,7 +155,10 @@ bool Collison::detect_decoded_snake(Objekt *temp_obj, int segment) {
 	dim[1][0] = temp_obj->dimension[X_data];
 	dim[1][1] = temp_obj->dimension[Y_data];
 
+	direc[0] = temp_obj->data[MOVEMENT][X_data][0];
+	direc[1] = temp_obj->data[MOVEMENT][Y_data][0];
 
-	return detect(pos, dim);
+
+	return detect(pos, dim, direc);
 }
 

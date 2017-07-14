@@ -9,9 +9,11 @@
 
 #include "cfg.h"
 
-void endprogramm(bool clc) {
-	if (!clc)
-		return void();
+void endprogramm(bool wl) {
+	if (wl)
+		MessageBox(NULL, "you lost", "DND", MB_OK | MB_ICONQUESTION);
+	else
+		MessageBox(NULL, "you WON", "END", MB_OK | MB_ICONQUESTION);
 	g.running = FALSE;
 	END = TRUE;
 	for (int delay_i = 0; delay_i < 100; delay_i++) { ; }
@@ -33,6 +35,13 @@ void sdraw::rect(int pos[DIMENSION_DATA][DIMENSION][WINING_LENGTH+1], int *dim,i
 
 void f() { SDL_RenderDrawLine(g.ren, 0, 0, 100, 100); }
 
+void draw_area() {
+	draw_line(10, 10, LENGTH_X, 10);
+	draw_line(LENGTH_X, 10, LENGTH_X, HIGHT_Y + 10);
+	draw_line(10, HIGHT_Y + 10, LENGTH_X, HIGHT_Y + 10);
+	draw_line(10, 10, 10, HIGHT_Y+10);
+
+}
 
 int main(int argc, char* argv[]) {
 	
@@ -75,9 +84,11 @@ int main(int argc, char* argv[]) {
 	Collison col_points;
 
 	int counter = 0;
+
 	___MCILOOPSTART___
 
 	SDL_SetRenderDrawColor(g.ren, 0, 0, 0, SDL_ALPHA_OPAQUE);
+	draw_area();
 
 	
 	for (int obj_counter = 0; obj_counter < amount_obj; obj_counter++) {
@@ -94,7 +105,7 @@ int main(int argc, char* argv[]) {
 			obj->add_length();
 			score++; new_object = true;
 			if (score >= WIN)
-				endprogramm(true);
+				endprogramm(false);
 
 			ptr[obj_counter]->random_position(game_area);
 		}
@@ -107,12 +118,17 @@ int main(int argc, char* argv[]) {
 		}
 	}
 	//look if snake bit itselfe
-	for (int obj_member_count = 1; obj_member_count < Snake.current_length; obj_member_count++) {
+	for (int obj_member_count = 4; obj_member_count < Snake.current_length; obj_member_count++) {
 		if (col_points.detect_decoded_snake(&Snake, obj_member_count)) {
-			//change
+			 //MessageBox(NULL, "collision", "collision", MB_OK | MB_ICONQUESTION);
+			endprogramm(true);
 		}
 	}
 
+	//Edge detection
+	if(Snake.data[POSITION][X_data][0] > LENGTH_X || Snake.data[POSITION][Y_data][0] > HIGHT_Y
+		|| Snake.data[POSITION][X_data][0] < 0 || Snake.data[POSITION][Y_data][0] < 0)
+		endprogramm(true);
 	
 
 	if (find(begin(increasing_points), end(increasing_points), score)!= end(increasing_points) && new_object && amount_points < 5) {

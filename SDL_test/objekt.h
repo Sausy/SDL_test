@@ -32,7 +32,7 @@ private:
 
 class Collison {
 public:
-	bool detect(int **pos, int **dim);
+	bool detect(int **pos, int **dim, int *direc);
 	bool detect_decoded(int pos1[DIMENSION_DATA][DIMENSION][WINING_LENGTH + 1], int pos2[DIMENSION_DATA][DIMENSION][WINING_LENGTH + 1], int *dim1, int *dim2);
 	bool detect_decoded_snake(Objekt *temp_obj, int segment);
 	bool collided;
